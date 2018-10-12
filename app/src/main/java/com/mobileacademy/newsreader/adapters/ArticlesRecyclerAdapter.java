@@ -1,8 +1,9 @@
 package com.mobileacademy.newsreader.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,9 +45,9 @@ public class ArticlesRecyclerAdapter extends RecyclerView.Adapter<ArticlesRecycl
 
                 if (recyclerView.isAnimating()) return;
 
-                articleList.remove(position);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, getItemCount());
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(articleList.get(position).getUrl()));
+                context.startActivity(i);
 
             }
         });
