@@ -1,12 +1,8 @@
 package com.mobileacademy.newsreader.adapters;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +13,7 @@ import com.mobileacademy.newsreader.models.Article;
 
 import java.util.List;
 
-/**
- * Created by danielastamati on 27/03/2018.
- */
-
 public class ArticlesRecyclerAdapter extends RecyclerView.Adapter<ArticlesRecyclerAdapter.ViewHolder> {
-
-    private static final String TAG = "ArticlesRecyclerAdapter";
 
     private List<Article> articleList;
     private Context context;
@@ -54,15 +44,9 @@ public class ArticlesRecyclerAdapter extends RecyclerView.Adapter<ArticlesRecycl
 
                 if (recyclerView.isAnimating()) return;
 
-                try {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(articleList.get(position).getUrl()));
-                    context.startActivity(i);
-                } catch (ActivityNotFoundException e){
-                    Log.e(TAG, "Could not open url + " + articleList.get(position).getUrl(), e);
-                }
-
-
+                articleList.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, getItemCount());
 
             }
         });

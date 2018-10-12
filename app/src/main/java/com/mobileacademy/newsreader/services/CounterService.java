@@ -3,10 +3,7 @@ package com.mobileacademy.newsreader.services;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-
-import com.mobileacademy.newsreader.activities.MainActivity;
 
 public class CounterService extends Service {
 
@@ -43,7 +40,7 @@ public class CounterService extends Service {
 
     private void count() {
         int i = 0;
-        while (i < 5) {
+        while (i < 10) {
             i++;
             Log.d(TAG, "second: " + i);
             try {
@@ -52,10 +49,6 @@ public class CounterService extends Service {
                 e.printStackTrace();
             }
         }
-
-
-        Intent intent = new Intent(MainActivity.INTENT_ACTION_TIMES_UP);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
 

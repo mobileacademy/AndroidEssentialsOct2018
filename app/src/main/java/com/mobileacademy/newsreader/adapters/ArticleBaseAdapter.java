@@ -13,10 +13,6 @@ import com.mobileacademy.newsreader.models.Article;
 
 import java.util.List;
 
-/**
- * Created by Daniela on 3/24/18.
- */
-
 public class ArticleBaseAdapter extends BaseAdapter {
 
 
