@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.mobileacademy.newsreader.NewsReaderApplication;
 import com.mobileacademy.newsreader.R;
 import com.mobileacademy.newsreader.adapters.ArticlesRecyclerAdapter;
 import com.mobileacademy.newsreader.api.HackerNewsApi;
@@ -34,17 +35,20 @@ import com.mobileacademy.newsreader.api.OkHttpSample;
 import com.mobileacademy.newsreader.models.Article;
 import com.mobileacademy.newsreader.services.CounterService;
 import com.mobileacademy.newsreader.services.FetchPackagesIntentService;
+import com.mobileacademy.newsreader.utils.NewReaderAppPref;
 import com.mobileacademy.newsreader.utils.Util;
 
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     public static final String INTENT_ACTION_TIMES_UP = "Time's up";
+    private static final String KEY_LAST_CHECK_DATE = "last_check_date";
 
     private DrawerLayout drawerLayout;
     private List<Article> list;
@@ -86,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         startService(new Intent(this, FetchPackagesIntentService.class));
 
         new FetchListAsyncTask(this).execute(HackerNewsApi.NEW_STORIES_ENDPOINT);
+
     }
 
     @Override
@@ -167,12 +172,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void getStories() {
 
+        Log.d(TAG, "getStories");
+
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Log.d(TAG, "onResponse: " + response);
+                Log.d(TAG, "#### onResponse: " + response);
 
                 Article article = Util.getArticleFromJson(response);
+
+                NewsReaderApplication.getDataSource().insertArticle(article);
 
                 list.add(article);
                 adapter.notifyItemInserted(list.size() - 1);
@@ -186,7 +195,23 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        HackerNewsApi.getTopStories(this, listener, errorListener, this);
+        NewReaderAppPref pref = new NewReaderAppPref(this);
+
+        String lastCheckDate = pref.readString(KEY_LAST_CHECK_DATE);
+        Log.d(TAG, "last check date = " + lastCheckDate);
+
+//        if(lastCheckDate.isEmpty()) {
+            HackerNewsApi.getTopStories(this, listener, errorListener, this);
+
+//            pref.addString(KEY_LAST_CHECK_DATE, new Date().toString());
+//        } else {
+//            // read articles from DB
+//            ArrayList<Article> articlesFromDb = NewsReaderApplication.getDataSource().getAllArticles();
+//
+//            list.addAll(articlesFromDb);
+//            adapter.notifyDataSetChanged();
+//        }
+
     }
 
     @Override
@@ -221,6 +246,8 @@ class FetchListAsyncTask extends AsyncTask<String, Void, okhttp3.Response> {
 
     @Override
     protected okhttp3.Response doInBackground(String... strings) {
+
+        Log.d(TAG, "ids=" + strings[0]);
 
         return OkHttpSample.getStoryIdsSyncOkhttp(strings[0]);
     }
